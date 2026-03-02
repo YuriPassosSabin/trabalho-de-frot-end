@@ -6,14 +6,43 @@
     <title>Login</title>
     <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css">
 
     <script src="https://unpkg.com/@babel/standalone/babel.min.js">
+      class Toggle extends React.component {
+            
+            constructor(props){
+                super(props);
 
+                this.state = {isToggleOn: true};
+
+                this.handleClick = this.handleClick.bind(this);
+            }
+
+            handleClick(){
+                this.setState(state => ({
+                    isToggleOn : !state.isToggleOn
+                }));
+            }
+
+            render(){
+                return(<button onClick={this.handleClick}>
+                    {this.state.isToggleOn ? 'on' : 'off'}
+                    </button>);
+
+            }
+        }
+
+        ReactDOM.render(
+            <Toggle />,
+            document.getElementById("login")
+        );
+        
     </script>
 </head>
 <body>
     <div id="login">
-
+        <button>botão errado</button>
     </div>
 </body>
 </html>
