@@ -1,52 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sistema de Matrículas</title>
+
+    <!-- React -->
     <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css" type="text/css">
-
-   
 </head>
-<body>
-    <header>
-        <h4>paginas</h4>
-        <ul>
-            <li id="link"><a href="login.html">login</a></li>
-        </ul>
-    </header>
-    <div id="home">
-        
-    </div>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js">
-      
-      function Logo(props){
-        return(
-            <div>
-                <h1>{props.titulo}</h1>
-                <img src="Imagens/Lp_logo_unisinos.png"/>
-                </div>
-        );
-      }
-      
-      function App(){
-        return(<div id="main">
-            <Logo titulo="HOME"/>
-            </div>
-            );
-      }
 
-        ReactDOM.render(
-            <App />,
-            document.getElementById("home")
-        )
-        
-    </script>
+<body>
+
+<header>
+    <h4>Páginas</h4>
+    <ul>
+        <li><a href="login.html">Login</a></li>
+    </ul>
+</header>
+
+<div id="home"></div>
+
+<script type="text/babel">
+
+function Logo(props){
+    return(
+        <div>
+            <h1>{props.titulo}</h1>
+            <img src="Imagens/Lp_logo_unisinos.png" alt="Logo da universidade"/>
+        </div>
+    );
+}
+
+function App(){
+    return(
+        <div id="main">
+            <Logo titulo="HOME"/>
+            <p>Bem-vindo ao Sistema de Matrículas.</p>
+        </div>
+    );
+}
+
+ReactDOM.render(
+    <App />,
+    document.getElementById("home")
+);
+
+</script>
 
 </body>
-<footer>
 
+<footer>
 </footer>
+
 </html>
