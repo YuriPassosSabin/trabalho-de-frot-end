@@ -1,63 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Matrículas</title>
-
-    <!-- React -->
+    <link rel="stylesheet" href="style.css">
+    <!-- React e React DOM -->
     <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-
+    <!-- React Router DOM -->
+    <script crossorigin src="https://unpkg.com/react-router-dom@5.3.0/umd/react-router-dom.min.js"></script>
     <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css" type="text/css">
 </head>
-
 <body>
+    <div id="root"></div>
 
-<header>
-    <h4>Páginas</h4>
-    <ul>
-        <li><a href="login.html">Login</a></li>
-    </ul>
-</header>
-
-<div id="home"></div>
-
-<script type="text/babel">
-
-function Logo(props){
-    return(
-        <div>
-            <h1>{props.titulo}</h1>
-            <img src="Imagens/Lp_logo_unisinos.png" alt="Logo da universidade"/>
-        </div>
-    );
-}
-
-function App(){
-    return(
-        <div id="main">
-            <Logo titulo="HOME"/>
-            <p>Bem-vindo ao Sistema de Matrículas.</p>
-        </div>
-    );
-}
-
-ReactDOM.render(
-    <App />,
-    document.getElementById("home")
-);
-
-</script>
-
+    <!-- Contexto deve vir primeiro -->
+    <script type="text/babel" src="components/Context/AppContext.js"></script>
+    
+    <!-- Componentes -->
+    <script type="text/babel" src="components/Header.js"></script>
+    <script type="text/babel" src="components/Home.js"></script>
+    <script type="text/babel" src="components/Login.js"></script>
+    <script type="text/babel" src="components/Admin/CourseForm.js"></script>
+    <script type="text/babel" src="components/Student/CourseList.js"></script>
+    <script type="text/babel" src="components/Student/MyCourses.js"></script>
+    
+    <!-- App principal -->
+    <script type="text/babel" src="app.js"></script>
 </body>
-
-<footer>
-</footer>
-
 </html>
