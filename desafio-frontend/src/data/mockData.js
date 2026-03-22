@@ -1,7 +1,8 @@
 export const users = [
   { id: 1, name: 'Admin', role: 'admin' },
   { id: 2, name: 'João Aluno', role: 'student' },
-  { id: 3, name: 'Maria Aluna', role: 'student' }
+  { id: 3, name: 'Maria Aluna', role: 'student' },
+  { id: 4, name: 'Pedro', role: 'student' }
 ];
 
 export const teachers = [

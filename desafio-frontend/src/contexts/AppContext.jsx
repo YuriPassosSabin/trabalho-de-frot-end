@@ -5,6 +5,8 @@ import { users, teachers, subjects, classes as initialClasses } from '../data/mo
 const SET_CURRENT_USER = 'SET_CURRENT_USER';
 const ADD_CLASS = 'ADD_CLASS';
 const ENROLL_STUDENT = 'ENROLL_STUDENT';
+const UNENROLL_STUDENT = 'UNENROLL_STUDENT';
+const REMOVE_CLASS = 'REMOVE_CLASS';
 
 const initialState = {
   users,
@@ -36,6 +38,20 @@ const reducer = (state, action) => {
       };
     default:
       return state;
+    case UNENROLL_STUDENT:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.classId
+            ? { ...cls, enrolledStudents: cls.enrolledStudents.filter(id => id !== action.payload.studentId) }
+            : cls
+        )
+      };
+    case REMOVE_CLASS:
+      return {
+        ...state,
+        classes: state.classes.filter(cls => cls.id !== action.payload)
+      };
   }
 };
 
@@ -49,13 +65,18 @@ export const AppProvider = ({ children }) => {
   const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
   const enrollStudent = (classId, studentId) => 
     dispatch({ type: ENROLL_STUDENT, payload: { classId, studentId } });
+  const unenrollStudent = (classId, studentId) =>
+    dispatch({ type: UNENROLL_STUDENT, payload: { classId, studentId } });
+  const removeClass = (classId) => dispatch({ type: REMOVE_CLASS, payload: classId });
 
   return (
     <AppContext.Provider value={{ 
       state, 
       setCurrentUser,
       addClass,
-      enrollStudent
+      enrollStudent,
+      unenrollStudent,
+      removeClass
     }}>
       {children}
     </AppContext.Provider>

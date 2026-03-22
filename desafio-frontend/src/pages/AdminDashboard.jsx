@@ -9,9 +9,15 @@ import { decodeTimeCode } from '../utils/helpers';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { state } = useApp();
+  const { state, removeClass } = useApp();
   const { classes, teachers, subjects } = state;
   const [showForm, setShowForm] = useState(false);
+
+  const handleDeleteClass = (classId, subjectName) => {
+    if (window.confirm(`Tem certeza que deseja excluir a turma de ${subjectName}?`)) {
+      removeClass(classId);
+    }
+  };
 
   // Se não estiver logado como admin, redireciona (proteção extra)
   // Isso pode ser feito nas rotas também, mas faremos aqui como fallback
@@ -48,6 +54,11 @@ const AdminDashboard = () => {
               <p className="text-gray-600">Professor: {getTeacherName(cls.teacherId)}</p>
               <p className="text-gray-600">Horário: {decodeTimeCode(cls.timeCode).full}</p>
               <p className="text-gray-600">Alunos matriculados: {cls.enrolledStudents.length}</p>
+              <div className="mt-4 flex justify-end">
+              <Button variant="danger" onClick={() => handleDeleteClass(cls.id, getSubjectName(cls.subjectId))}>
+                Excluir
+              </Button>
+            </div>
             </Card>
           ))}
         </div>
