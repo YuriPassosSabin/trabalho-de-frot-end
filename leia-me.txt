@@ -2,6 +2,5 @@ Olá este e um sistema de matricular do Desafio-Frontend da unisinos. Siga as in
 
 1-Faça o download no arquivo ZIP no github ou use o gitclone.
 2- Entre na pasta desafio-frontend no terminal
-3- Rode o comando cd desafio-frontend
-4- Rode npm install para instalar as dependencias
-5- Rode npm run dev no terminal e acesse o link de localhost
+3- Rode npm install para instalar as dependencias
+4- Rode npm rundev no terminal e acesse o link de localhost
