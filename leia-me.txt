@@ -4,3 +4,179 @@ Olá este e um sistema de matricular do Desafio-Frontend da unisinos. Siga as in
 2- Entre na pasta desafio-frontend no terminal
 3- Rode npm install para instalar as dependencias
 4- Rode npm rundev no terminal e acesse o link de localhost
+
+
+
+---------------------------------------------------------------------------------------------------------------
+
+Agora um overview completo do que já construímos até agora. Isso vai nos ajudar a manter a consistência e visualizar o que já está funcionando antes de adicionarmos funcionalidades
+
+desafio-frontend/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Button.jsx
+│   │   │   ├── Card.jsx
+│   │   │   └── Navbar.jsx
+│   │   ├── admin/
+│   │   │   └── ClassForm.jsx
+│   │   └── student/
+│   │       └── ClassCard.jsx
+│   ├── contexts/
+│   │   └── AppContext.jsx
+│   ├── data/
+│   │   └── mockData.js
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── AdminDashboard.jsx
+│   │   └── StudentDashboard.jsx
+│   ├── utils/
+│   │   └── helpers.js
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── index.html
+├── package.json
+├── vite.config.js
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Principais Arquivos e Suas Responsabilidades:
+
+🔹 src/contexts/AppContext.jsx
+
+    Responsabilidade: Gerenciar o estado global da aplicação usando useReducer.
+
+    Estado:
+
+        users: lista de usuários (admin e alunos)
+
+        teachers: professores
+
+        subjects: disciplinas
+
+        classes: turmas (cada turma tem enrolledStudents)
+
+        currentUser: usuário atualmente logado (inicia null)
+
+    Ações:
+
+        SET_CURRENT_USER: define o usuário atual (simula login)
+
+        ADD_CLASS: adiciona uma nova turma (usado pelo admin)
+
+        ENROLL_STUDENT: matricula um aluno em uma turma
+
+    Provider: AppProvider envolvendo a aplicação no main.jsx.
+
+🔹 src/data/mockData.js
+
+    Dados fictícios para simular o backend.
+
+    Contém arrays de users, teachers, subjects e classes iniciais.
+
+    Exemplo: já temos 4 turmas, algumas com alunos matriculados.
+
+🔹 src/utils/helpers.js
+
+    Funções utilitárias:
+
+        decodeTimeCode(code): converte código como "21" em "Segunda - Manhã".
+
+        encodeTimeCode(day, shift): junta dia e turno em código (ex: 2 + 1 = "21").
+
+🔹 Componentes Comuns (common/)
+
+Componente	Função
+
+Button.jsx	Botão reutilizável com variantes (primary, secondary, danger)
+
+Card.jsx	Container com sombra e padding, usado para cards de turmas
+
+Navbar.jsx	Barra superior que mostra usuário logado e botão de logout (com redirecionamento)
+
+🔹 Componentes Específicos
+
+Componente	Localização	Função
+
+ClassForm.jsx	admin/	Formulário para criar nova turma (admin)
+
+ClassCard.jsx	student/	Card de turma para aluno, com botão de matrícula (se disponível)
+
+🔹 Páginas
+
+Página	Caminho	Descrição
+
+Home.jsx	/	Tela inicial com seleção de perfil (admin ou aluno específico)
+
+AdminDashboard.jsx	/admin	Painel do admin: lista turmas e botão para criar nova
+
+StudentDashboard.jsx	/student	Painel do aluno: abas "Turmas Disponíveis" e "Minhas Turmas", com cards
+
+🔹 App.jsx
+
+    Configura o BrowserRouter e as rotas.
+
+    Envolve tudo com AppProvider.
+
+    Rotas definidas:
+
+        / → Home
+
+        /admin → AdminDashboard (protegida: redireciona se não for admin)
+
+        /student → StudentDashboard (protegida: redireciona se não for aluno)
+
+        * → redireciona para /
+
+🔹 main.jsx
+
+    Ponto de entrada, renderiza <App /> dentro do React.StrictMode.
+
+    Importa o CSS do Tailwind.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+- Fluxo de Navegação e Troca de Perfil (Login Simulado)
+
+    Usuário acessa a Home (/).
+
+    Escolhe um perfil:
+
+        Admin: clica no card "Entrar como Admin".
+
+        Aluno: escolhe um dos alunos listados (João ou Maria).
+
+    setCurrentUser(user) é chamado, atualizando o contexto.
+
+    Redireciona para a rota correspondente (/admin ou /student).
+
+    O Navbar exibe o nome do usuário e um botão "Sair".
+
+    Ao clicar em "Sair", currentUser volta a ser null e redireciona para /.
+
+- Funcionalidades Implementadas
+
+✅ Para o Administrador
+
+    Visualizar todas as turmas existentes (com disciplina, professor, horário e quantidade de alunos).
+
+    Criar nova turma através de um formulário (seleciona disciplina, professor, dia e turno). A nova turma é adicionada ao estado global e aparece na lista.
+
+✅ Para o Aluno
+
+    Visualizar turmas disponíveis (onde ainda não está matriculado).
+
+    Matricular-se em uma turma (botão "Matricular-se" no card). A ação atualiza o array enrolledStudents da turma.
+
+    Visualizar minhas turmas (onde já está matriculado).
+
+✅ Dados Mockados
+
+    4 turmas iniciais, algumas com matrículas de exemplo.
+
+    2 alunos (João e Maria) e 1 admin.
+
+    3 professores e 4 disciplinas.
