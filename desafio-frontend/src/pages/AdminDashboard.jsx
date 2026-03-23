@@ -12,11 +12,22 @@ const AdminDashboard = () => {
   const { state, removeClass } = useApp();
   const { classes, teachers, subjects } = state;
   const [showForm, setShowForm] = useState(false);
+  const [editingClass, setEditingClass] = useState(null);
 
   const handleDeleteClass = (classId, subjectName) => {
     if (window.confirm(`Tem certeza que deseja excluir a turma de ${subjectName}?`)) {
       removeClass(classId);
     }
+  };
+
+  const handleEditClass = (cls) => {
+    setEditingClass(cls);
+    setShowForm(true);
+  };
+
+  const handleFormClose = () => {
+    setShowForm(false);
+    setEditingClass(null);
   };
 
   // Se não estiver logado como admin, redireciona (proteção extra)
@@ -35,14 +46,14 @@ const AdminDashboard = () => {
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Painel do Administrador</h1>
-          <Button onClick={() => setShowForm(!showForm)}>
+          <Button onClick={() => { setShowForm(!showForm); setEditingClass(null); }}>
             {showForm ? 'Cancelar' : '+ Nova Turma'}
           </Button>
         </div>
 
         {showForm && (
           <Card className="mb-6">
-            <ClassForm onSuccess={() => setShowForm(false)} />
+            <ClassForm editClass={editingClass} onSuccess={handleFormClose} />
           </Card>
         )}
 
@@ -54,7 +65,10 @@ const AdminDashboard = () => {
               <p className="text-gray-600">Professor: {getTeacherName(cls.teacherId)}</p>
               <p className="text-gray-600">Horário: {decodeTimeCode(cls.timeCode).full}</p>
               <p className="text-gray-600">Alunos matriculados: {cls.enrolledStudents.length}</p>
-              <div className="mt-4 flex justify-end">
+              <div className="mt-4 flex justify-end gap-2">
+              <Button variant="primary" onClick={() => handleEditClass(cls)}>
+                Editar
+              </Button>
               <Button variant="danger" onClick={() => handleDeleteClass(cls.id, getSubjectName(cls.subjectId))}>
                 Excluir
               </Button>

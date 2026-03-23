@@ -4,6 +4,7 @@ import { users, teachers, subjects, classes as initialClasses } from '../data/mo
 // Ações
 const SET_CURRENT_USER = 'SET_CURRENT_USER';
 const ADD_CLASS = 'ADD_CLASS';
+const UPDATE_CLASS = 'UPDATE_CLASS';
 const ENROLL_STUDENT = 'ENROLL_STUDENT';
 const UNENROLL_STUDENT = 'UNENROLL_STUDENT';
 const REMOVE_CLASS = 'REMOVE_CLASS';
@@ -27,6 +28,15 @@ const reducer = (state, action) => {
         enrolledStudents: []
       };
       return { ...state, classes: [...state.classes, newClass] };
+    case UPDATE_CLASS:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.id
+            ? { ...cls, ...action.payload }
+            : cls
+        )
+      };
     case ENROLL_STUDENT:
       return {
         ...state,
@@ -36,8 +46,6 @@ const reducer = (state, action) => {
             : cls
         )
       };
-    default:
-      return state;
     case UNENROLL_STUDENT:
       return {
         ...state,
@@ -52,6 +60,8 @@ const reducer = (state, action) => {
         ...state,
         classes: state.classes.filter(cls => cls.id !== action.payload)
       };
+    default:
+      return state;
   }
 };
 
@@ -63,6 +73,7 @@ export const AppProvider = ({ children }) => {
   // Actions helpers
   const setCurrentUser = (user) => dispatch({ type: SET_CURRENT_USER, payload: user });
   const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
+  const updateClass = (classData) => dispatch({ type: UPDATE_CLASS, payload: classData });
   const enrollStudent = (classId, studentId) => 
     dispatch({ type: ENROLL_STUDENT, payload: { classId, studentId } });
   const unenrollStudent = (classId, studentId) =>
@@ -74,6 +85,7 @@ export const AppProvider = ({ children }) => {
       state, 
       setCurrentUser,
       addClass,
+      updateClass,
       enrollStudent,
       unenrollStudent,
       removeClass
