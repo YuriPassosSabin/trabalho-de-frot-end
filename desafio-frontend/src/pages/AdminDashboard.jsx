@@ -6,6 +6,7 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import ClassForm from '../components/admin/ClassForm';
 import { decodeTimeCode } from '../utils/helpers';
+import { useEffect } from 'react';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -15,15 +16,20 @@ const AdminDashboard = () => {
 
   // Se não estiver logado como admin, redireciona (proteção extra)
   // Isso pode ser feito nas rotas também, mas faremos aqui como fallback
-  if (state.currentUser?.role !== 'admin') {
+  useEffect(() => {
+  if (!state.currentUser ||state.currentUser?.role !== 'admin') {
     navigate('/');
-    return null;
-  }
+  }},[state.currentUser, navigate])
+
+  if (!state.currentUser ||state.currentUser?.role !== 'admin') {
+     return null;
+}
 
   const getSubjectName = (id) => subjects.find(s => s.id === id)?.name || 'Desconhecida';
   const getTeacherName = (id) => teachers.find(t => t.id === id)?.name || 'Desconhecido';
 
   return (
+
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <div className="container mx-auto p-6">
@@ -41,6 +47,12 @@ const AdminDashboard = () => {
         )}
 
         <h2 className="text-2xl font-semibold mb-4">Turmas Existentes</h2>
+
+            {/* 👇 mensagem quando não há turmas */}
+            {classes.length === 0 && (
+            <p className="text-gray-500">Nenhuma turma cadastrada.</p>
+            )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {classes.map(cls => (
             <Card key={cls.id} className="hover:shadow-lg transition">
