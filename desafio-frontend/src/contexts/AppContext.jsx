@@ -80,6 +80,16 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // 🔹 Persistir usuário
+useEffect(() => {
+  localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+}, [state.currentUser]);
+
+// 🔹 Persistir turmas
+useEffect(() => {
+  localStorage.setItem("classes", JSON.stringify(state.classes));
+}, [state.classes]);
+
   // Actions helpers
   const setCurrentUser = (user) => dispatch({ type: SET_CURRENT_USER, payload: user });
   const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
