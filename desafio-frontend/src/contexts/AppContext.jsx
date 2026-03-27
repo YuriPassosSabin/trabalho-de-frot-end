@@ -1,85 +1,50 @@
-import React, { createContext, useReducer, useContext, useEffect} from 'react';
+import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import { users, teachers, subjects, classes as initialClasses } from '../data/mockData';
+
+// 🔹 Helper seguro
+const loadFromStorage = (key, fallback) => {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : fallback;
+  } catch {
+    return fallback;
+  }
+};
 
 // Ações
 const SET_CURRENT_USER = 'SET_CURRENT_USER';
 const ADD_CLASS = 'ADD_CLASS';
 const UPDATE_CLASS = 'UPDATE_CLASS';
-const ENROLL_STUDENT = 'ENROLL_STUDENT';
-<<<<<<< HEAD
-const SET_CLASSES = "SET_CLASSES";
-const UPDATE_CLASS = 'UPDATE_CLASS';
-
-=======
-const UNENROLL_STUDENT = 'UNENROLL_STUDENT';
-const REMOVE_CLASS = 'REMOVE_CLASS';
->>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
 
 const initialState = {
   users,
   teachers,
   subjects,
-  classes: initialClasses,
-  currentUser: null // Inicia sem usuário logado
+  classes: loadFromStorage("classes", initialClasses),
+  currentUser: loadFromStorage("currentUser", null)
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_CURRENT_USER:
       return { ...state, currentUser: action.payload };
+
     case ADD_CLASS:
       const newClass = {
-        id: Date.now(), // id simples
+        id: Date.now(),
         ...action.payload,
         enrolledStudents: []
       };
       return { ...state, classes: [...state.classes, newClass] };
-    case UPDATE_CLASS:
-      return {
-        ...state,
-        classes: state.classes.map(cls =>
-          cls.id === action.payload.id
-            ? { ...cls, ...action.payload }
-            : cls
-        )
-      };
-    case ENROLL_STUDENT:
-      return {
-        ...state,
-        classes: state.classes.map(cls =>
-          cls.id === action.payload.classId
-            ? { ...cls, enrolledStudents: [...cls.enrolledStudents, action.payload.studentId] }
-            : cls
-        )
-      };
-<<<<<<< HEAD
-    case SET_CLASSES:
-       return { ...state, classes: action.payload };
-    
-    case UPDATE_CLASS:
-       return {
-       ...state,
-        classes: state.classes.map(cls =>
-        cls.id === action.payload.id ? action.payload : cls
-    )
-  };
 
-=======
-    case UNENROLL_STUDENT:
+    case UPDATE_CLASS:
       return {
         ...state,
         classes: state.classes.map(cls =>
-          cls.id === action.payload.classId
-            ? { ...cls, enrolledStudents: cls.enrolledStudents.filter(id => id !== action.payload.studentId) }
-            : cls
+          cls.id === action.payload.id ? action.payload : cls
         )
       };
-    case REMOVE_CLASS:
-      return {
-        ...state,
-        classes: state.classes.filter(cls => cls.id !== action.payload)
-      };
->>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
+
     default:
       return state;
   }
@@ -90,65 +55,52 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Actions helpers
-  const setCurrentUser = (user) => dispatch({ type: SET_CURRENT_USER, payload: user });
-<<<<<<< HEAD
-  const addClass = async (classData) => {
-  try {
-    const response = await fetch("http://localhost:3000/classes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify(classData)
-    });
-=======
-  const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
-  const updateClass = (classData) => dispatch({ type: UPDATE_CLASS, payload: classData });
-  const enrollStudent = (classId, studentId) => 
-    dispatch({ type: ENROLL_STUDENT, payload: { classId, studentId } });
-  const unenrollStudent = (classId, studentId) =>
-    dispatch({ type: UNENROLL_STUDENT, payload: { classId, studentId } });
-  const removeClass = (classId) => dispatch({ type: REMOVE_CLASS, payload: classId });
->>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
+  // 🔹 Persistir usuário
+  useEffect(() => {
+    localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+  }, [state.currentUser]);
 
-    const newClass = await response.json();
+  // 🔹 Persistir turmas
+  useEffect(() => {
+    localStorage.setItem("classes", JSON.stringify(state.classes));
+  }, [state.classes]);
 
-    dispatch({ type: ADD_CLASS, payload: newClass });
+  // 🔹 Login
+  const setCurrentUser = (user) => {
+    dispatch({ type: SET_CURRENT_USER, payload: user });
 
-  } catch (error) {
-    console.error("Erro ao criar turma:", error);
-  }
-};
-  const enrollStudent = async (classID, studentID) => {
-  try {
-    const response = await fetch("http://localhost:3000/classes/enroll", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ classID, studentID })
-    });
+    if (!user) {
+      localStorage.removeItem("currentUser");
+    }
+  };
 
-    const updatedClass = await response.json();
+  // 🔹 Criar turma (LOCAL)
+  const addClass = (classData) => {
+    dispatch({ type: ADD_CLASS, payload: classData });
+  };
+
+  // 🔹 Matricular aluno (LOCAL)
+  const enrollStudent = (classId, studentId) => {
+    const cls = state.classes.find(c => c.id === classId);
+
+    if (!cls) return;
+
+    if (cls.enrolledStudents.includes(studentId)) return;
+
+    const updatedClass = {
+      ...cls,
+      enrolledStudents: [...cls.enrolledStudents, studentId]
+    };
 
     dispatch({ type: UPDATE_CLASS, payload: updatedClass });
+  };
 
-  } catch (error) {
-    console.error("Erro ao matricular:", error);
-  }
-};
   return (
     <AppContext.Provider value={{ 
       state, 
       setCurrentUser,
       addClass,
-      updateClass,
-      enrollStudent,
-      unenrollStudent,
-      removeClass
+      enrollStudent
     }}>
       {children}
     </AppContext.Provider>
