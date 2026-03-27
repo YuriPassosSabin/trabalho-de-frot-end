@@ -4,10 +4,16 @@ import { users, teachers, subjects, classes as initialClasses } from '../data/mo
 // Ações
 const SET_CURRENT_USER = 'SET_CURRENT_USER';
 const ADD_CLASS = 'ADD_CLASS';
+const UPDATE_CLASS = 'UPDATE_CLASS';
 const ENROLL_STUDENT = 'ENROLL_STUDENT';
+<<<<<<< HEAD
 const SET_CLASSES = "SET_CLASSES";
 const UPDATE_CLASS = 'UPDATE_CLASS';
 
+=======
+const UNENROLL_STUDENT = 'UNENROLL_STUDENT';
+const REMOVE_CLASS = 'REMOVE_CLASS';
+>>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
 
 const initialState = {
   users,
@@ -28,6 +34,15 @@ const reducer = (state, action) => {
         enrolledStudents: []
       };
       return { ...state, classes: [...state.classes, newClass] };
+    case UPDATE_CLASS:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.id
+            ? { ...cls, ...action.payload }
+            : cls
+        )
+      };
     case ENROLL_STUDENT:
       return {
         ...state,
@@ -37,6 +52,7 @@ const reducer = (state, action) => {
             : cls
         )
       };
+<<<<<<< HEAD
     case SET_CLASSES:
        return { ...state, classes: action.payload };
     
@@ -48,6 +64,22 @@ const reducer = (state, action) => {
     )
   };
 
+=======
+    case UNENROLL_STUDENT:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.classId
+            ? { ...cls, enrolledStudents: cls.enrolledStudents.filter(id => id !== action.payload.studentId) }
+            : cls
+        )
+      };
+    case REMOVE_CLASS:
+      return {
+        ...state,
+        classes: state.classes.filter(cls => cls.id !== action.payload)
+      };
+>>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
     default:
       return state;
   }
@@ -60,6 +92,7 @@ export const AppProvider = ({ children }) => {
 
   // Actions helpers
   const setCurrentUser = (user) => dispatch({ type: SET_CURRENT_USER, payload: user });
+<<<<<<< HEAD
   const addClass = async (classData) => {
   try {
     const response = await fetch("http://localhost:3000/classes", {
@@ -70,6 +103,15 @@ export const AppProvider = ({ children }) => {
       credentials: "include",
       body: JSON.stringify(classData)
     });
+=======
+  const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
+  const updateClass = (classData) => dispatch({ type: UPDATE_CLASS, payload: classData });
+  const enrollStudent = (classId, studentId) => 
+    dispatch({ type: ENROLL_STUDENT, payload: { classId, studentId } });
+  const unenrollStudent = (classId, studentId) =>
+    dispatch({ type: UNENROLL_STUDENT, payload: { classId, studentId } });
+  const removeClass = (classId) => dispatch({ type: REMOVE_CLASS, payload: classId });
+>>>>>>> 837ce6fe0de6af8bc60d9a94d46cec9b26560d3d
 
     const newClass = await response.json();
 
@@ -103,7 +145,10 @@ export const AppProvider = ({ children }) => {
       state, 
       setCurrentUser,
       addClass,
-      enrollStudent
+      updateClass,
+      enrollStudent,
+      unenrollStudent,
+      removeClass
     }}>
       {children}
     </AppContext.Provider>

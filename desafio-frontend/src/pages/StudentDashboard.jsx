@@ -84,7 +84,7 @@ const StudentDashboard = () => {
                     classData={cls}
                     subjectName={getSubjectName(cls.subjectId)}
                     teacherName={getTeacherName(cls.teacherId)}
-                    action="none"
+                    action="unenroll"
                   />
                 ))}
               </div>
