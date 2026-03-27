@@ -15,6 +15,9 @@ const loadFromStorage = (key, fallback) => {
 const SET_CURRENT_USER = 'SET_CURRENT_USER';
 const ADD_CLASS = 'ADD_CLASS';
 const UPDATE_CLASS = 'UPDATE_CLASS';
+const ENROLL_STUDENT = 'ENROLL_STUDENT';
+const UNENROLL_STUDENT = 'UNENROLL_STUDENT';
+const REMOVE_CLASS = 'REMOVE_CLASS';
 
 const initialState = {
   users,
@@ -28,23 +31,45 @@ const reducer = (state, action) => {
   switch (action.type) {
     case SET_CURRENT_USER:
       return { ...state, currentUser: action.payload };
-
     case ADD_CLASS:
       const newClass = {
-        id: Date.now(),
+        id: Date.now(), // id simples
         ...action.payload,
         enrolledStudents: []
       };
       return { ...state, classes: [...state.classes, newClass] };
-
     case UPDATE_CLASS:
       return {
         ...state,
         classes: state.classes.map(cls =>
-          cls.id === action.payload.id ? action.payload : cls
+          cls.id === action.payload.id
+            ? { ...cls, ...action.payload }
+            : cls
         )
       };
-
+    case ENROLL_STUDENT:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.classId
+            ? { ...cls, enrolledStudents: [...cls.enrolledStudents, action.payload.studentId] }
+            : cls
+        )
+      };
+    case UNENROLL_STUDENT:
+      return {
+        ...state,
+        classes: state.classes.map(cls =>
+          cls.id === action.payload.classId
+            ? { ...cls, enrolledStudents: cls.enrolledStudents.filter(id => id !== action.payload.studentId) }
+            : cls
+        )
+      };
+    case REMOVE_CLASS:
+      return {
+        ...state,
+        classes: state.classes.filter(cls => cls.id !== action.payload)
+      };
     default:
       return state;
   }
@@ -55,52 +80,25 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // 🔹 Persistir usuário
-  useEffect(() => {
-    localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
-  }, [state.currentUser]);
-
-  // 🔹 Persistir turmas
-  useEffect(() => {
-    localStorage.setItem("classes", JSON.stringify(state.classes));
-  }, [state.classes]);
-
-  // 🔹 Login
-  const setCurrentUser = (user) => {
-    dispatch({ type: SET_CURRENT_USER, payload: user });
-
-    if (!user) {
-      localStorage.removeItem("currentUser");
-    }
-  };
-
-  // 🔹 Criar turma (LOCAL)
-  const addClass = (classData) => {
-    dispatch({ type: ADD_CLASS, payload: classData });
-  };
-
-  // 🔹 Matricular aluno (LOCAL)
-  const enrollStudent = (classId, studentId) => {
-    const cls = state.classes.find(c => c.id === classId);
-
-    if (!cls) return;
-
-    if (cls.enrolledStudents.includes(studentId)) return;
-
-    const updatedClass = {
-      ...cls,
-      enrolledStudents: [...cls.enrolledStudents, studentId]
-    };
-
-    dispatch({ type: UPDATE_CLASS, payload: updatedClass });
-  };
+  // Actions helpers
+  const setCurrentUser = (user) => dispatch({ type: SET_CURRENT_USER, payload: user });
+  const addClass = (classData) => dispatch({ type: ADD_CLASS, payload: classData });
+  const updateClass = (classData) => dispatch({ type: UPDATE_CLASS, payload: classData });
+  const enrollStudent = (classId, studentId) => 
+    dispatch({ type: ENROLL_STUDENT, payload: { classId, studentId } });
+  const unenrollStudent = (classId, studentId) =>
+    dispatch({ type: UNENROLL_STUDENT, payload: { classId, studentId } });
+  const removeClass = (classId) => dispatch({ type: REMOVE_CLASS, payload: classId });
 
   return (
     <AppContext.Provider value={{ 
       state, 
       setCurrentUser,
       addClass,
-      enrollStudent
+      updateClass,
+      enrollStudent,
+      unenrollStudent,
+      removeClass
     }}>
       {children}
     </AppContext.Provider>
